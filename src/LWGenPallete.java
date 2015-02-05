@@ -10,7 +10,7 @@ public class LWGenPallete {
 	private String currentBaseColor;//STR Storing the current HEX base.
 	private byte currentSteps;//BYTE Containing current step amount;
 
-	private byte domRGB;//BYTE Containing the dominant color r(1)g(2)b(3).
+	private byte changeableRGB;//BYTE Containing the dominant color r(1)g(2)b(3).
 	private float harsh;//FLOAT Containing the multiplier for how much currentBaseColor's valRGB will change.
 
 	public LWGenPallete(){reset();}
@@ -31,21 +31,21 @@ public class LWGenPallete {
 		currentColors = null;
 		currentBaseColor = "ffffff";
 		currentSteps = 5;
-		domRGB = (byte)(R.nextInt(3)+1);
+		changeableRGB = (byte)(R.nextInt(3)+1);
 		harsh = 1;
 	}
 
 	public String[] nextColors(){
 		if (currentColors != null)previousColors.add(currentColors);
 
-		String tempColor = reorderHex(currentBaseColor,domRGB);
+		String tempColor = reorderHex(currentBaseColor,changeableRGB);
 		short [] intervals = calcIntervals(hexToDec(tempColor.substring(0, 2)));
 
 		currentColors = new String [currentSteps];
 
 		for(int i = 0; i < currentSteps; i++){
 			currentColors[i]= decToHex(intervals[i])+tempColor.substring(2, 6);
-			currentColors[i] = returnHex(currentColors[i],domRGB);
+			currentColors[i] = returnHex(currentColors[i],changeableRGB);
 		}
 		
 		previousSteps.add(currentSteps);
@@ -57,13 +57,13 @@ public class LWGenPallete {
 		
 		currentColors = new String[currentSteps];
 
-		String tempColor = reorderHex(currentBaseColor,domRGB);
+		String tempColor = reorderHex(currentBaseColor,changeableRGB);
 		short [] intervals1 = calcIntervals(hexToDec(tempColor.substring(2, 4)));
 		short [] intervals2 = calcIntervals(hexToDec(tempColor.substring(4, 6)));
 
 		for(int i = 0; i < currentSteps; i++){
 			currentColors[i] = tempColor.substring(0, 2) + decToHex(intervals1[i]) + decToHex(intervals2[i]);
-			currentColors[i] = returnHex(currentColors[i],domRGB);
+			currentColors[i] = returnHex(currentColors[i],changeableRGB);
 		}
 
 		previousSteps.add(currentSteps);
@@ -85,17 +85,9 @@ public class LWGenPallete {
 		return currentColors;
 	}
 
-	public boolean isDark(float perc){
+	public boolean lighten(double perc){
 		while (perc>1)perc = perc/10;
-		float amount = 255*perc;
-		
-		if (getValuePerRGB(domRGB, currentBaseColor) < amount)return true;
-		return false;
-	}
-
-	public boolean lighten(float perc){
-		while (perc>1)perc = perc/10;
-		short most = (short) (255-(getValuePerRGB(domRGB, currentBaseColor)));
+		short most = (short) (255-(getValuePerRGB(calcMost(currentBaseColor), currentBaseColor)));
 		short amount = (short) (255*perc);
 		boolean flag = true;
 		short [] newVals = new short [3];
@@ -106,8 +98,27 @@ public class LWGenPallete {
 		}
 		
 		for (int i = 0; i < newVals.length; i++)newVals[i] = (short)((getValuePerRGB(i+1,currentBaseColor))+amount);
-
-		currentBaseColor = decToHex(newVals[0]) + decToHex(newVals[1]) + decToHex(newVals[2]); 
+		
+		currentBaseColor = decToHex(newVals[0]) + decToHex(newVals[1]) + decToHex(newVals[2]);
+		
+		return flag;
+	}
+	
+	public boolean darken(double perc){
+		while (perc>1)perc = perc/10;
+		short least = (short) ((getValuePerRGB(calcLeast(currentBaseColor), currentBaseColor)));
+		short amount = (short) (255*perc);
+		boolean flag = true;
+		short [] newVals = new short [3];
+		
+		if (amount > least){
+			amount = least;
+			flag = false;
+		}
+		//No math fixed yet
+		for (int i = 0; i < newVals.length; i++)newVals[i] = (short)((getValuePerRGB(i+1,currentBaseColor))-amount);
+		
+		currentBaseColor = decToHex(newVals[0]) + decToHex(newVals[1]) + decToHex(newVals[2]);
 		
 		return flag;
 	}
@@ -134,7 +145,7 @@ public class LWGenPallete {
 			return false;
 		}
 		currentBaseColor = HEX.toLowerCase();
-		domRGB = calcDominant(currentBaseColor);
+		changeableRGB = calcMost(currentBaseColor);
 		return true;
 	}
 	
@@ -146,7 +157,7 @@ public class LWGenPallete {
 	}
 	public boolean setEditable(byte dominant){
 		if (dominant == 1 || dominant == 2 || dominant == 3){
-			domRGB = dominant;
+			changeableRGB = dominant;
 			return true;
 		}
 		return false;
@@ -161,7 +172,7 @@ public class LWGenPallete {
 
 	public String getBase(){return currentBaseColor;}
 	public byte getSteps(){return currentSteps;}
-	public byte getDominant(){return domRGB;}
+	public byte getDominant(){return changeableRGB;}
 	public float getHarshness(){return harsh;}
 	public String[] getColorsAt(int index){
 		if (previousColors.size()<index || index < 0)return null;
@@ -192,7 +203,7 @@ public class LWGenPallete {
 		return rgb.get(0)+rgb.get(1)+rgb.get(2);
 	}
 
-	private byte calcDominant(String inColor) {
+	private byte calcMost(String inColor) {
 		Short [] rgbSplit = new Short [3];
 
 		byte index = 0;
@@ -202,6 +213,22 @@ public class LWGenPallete {
 			rgbSplit [i] = getValuePerRGB(i+1, inColor);
 			if (rgbSplit [i]>big){
 				big = rgbSplit [i];
+				index = (byte)(i+1);
+			}
+		}
+		return index;
+	}
+	
+	private byte calcLeast(String inColor) {
+		Short [] rgbSplit = new Short [3];
+
+		byte index = 0;
+		int small = Integer.MAX_VALUE;
+
+		for (short i = 0; i < rgbSplit.length; i++){
+			rgbSplit [i] = getValuePerRGB(i+1, inColor);
+			if (rgbSplit [i]<small){
+				small = rgbSplit [i];
 				index = (byte)(i+1);
 			}
 		}
