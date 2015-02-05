@@ -44,7 +44,7 @@ public class LWGenPallete {
 		currentColors = new String [currentSteps];
 
 		for(int i = 0; i < currentSteps; i++){
-			currentColors[i]= toHexString(intervals[i])+tempColor.substring(2, 6);
+			currentColors[i]= decToHex(intervals[i])+tempColor.substring(2, 6);
 			currentColors[i] = returnHex(currentColors[i],domRGB);
 		}
 		
@@ -62,7 +62,7 @@ public class LWGenPallete {
 		short [] intervals2 = calcIntervals(hexToDec(tempColor.substring(4, 6)));
 
 		for(int i = 0; i < currentSteps; i++){
-			currentColors[i] = tempColor.substring(0, 2) + toHexString(intervals1[i]) + toHexString(intervals2[i]);
+			currentColors[i] = tempColor.substring(0, 2) + decToHex(intervals1[i]) + decToHex(intervals2[i]);
 			currentColors[i] = returnHex(currentColors[i],domRGB);
 		}
 
@@ -79,7 +79,7 @@ public class LWGenPallete {
 		short [] intervals1 = calcIntervals(hexToDec(currentBaseColor.substring(2, 4)));
 		short [] intervals2 = calcIntervals(hexToDec(currentBaseColor.substring(4, 6)));
 
-		for(int i = 0; i < currentSteps; i++)currentColors[i] =  toHexString(intervals0[i]) + toHexString(intervals1[i]) + toHexString(intervals2[i]);
+		for(int i = 0; i < currentSteps; i++)currentColors[i] =  decToHex(intervals0[i]) + decToHex(intervals1[i]) + decToHex(intervals2[i]);
 
 		previousSteps.add(currentSteps);
 		return currentColors;
@@ -107,7 +107,7 @@ public class LWGenPallete {
 		
 		for (int i = 0; i < newVals.length; i++)newVals[i] = (short)((getValuePerRGB(i+1,currentBaseColor))+amount);
 
-		currentBaseColor = toHexString(newVals[0]) + toHexString(newVals[1]) + toHexString(newVals[2]); 
+		currentBaseColor = decToHex(newVals[0]) + decToHex(newVals[1]) + decToHex(newVals[2]); 
 		
 		return flag;
 	}
@@ -218,7 +218,7 @@ public class LWGenPallete {
 		return (short)d;
 	}
 
-	private String toHexString(int input){
+	private String decToHex(int input){
 		String out = Integer.toHexString(input);
 		while (out.length()<2) out = "0"+out;
 		return out;
