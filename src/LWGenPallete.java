@@ -141,7 +141,6 @@ public class LWGenPallete {
 		}
 		catch(NumberFormatException nfe)
 		{
-			System.out.println("not a valid hex");
 			return false;
 		}
 		currentBaseColor = HEX.toLowerCase();
@@ -149,15 +148,15 @@ public class LWGenPallete {
 		return true;
 	}
 	
-	public boolean setSteps(byte s){
-		if (s<2)return false;
+	public boolean setSteps(byte steps){
+		if (steps<2)return false;
 
-		currentSteps = s;
+		currentSteps = steps;
 		return true;
 	}
-	public boolean setEditable(byte dominant){
-		if (dominant == 1 || dominant == 2 || dominant == 3){
-			changeableRGB = dominant;
+	public boolean setEditable(byte RGB){
+		if (RGB == 1 || RGB == 2 || RGB == 3){
+			changeableRGB = RGB;
 			return true;
 		}
 		return false;
