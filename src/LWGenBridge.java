@@ -1,22 +1,20 @@
 import java.util.LinkedList;
 import java.util.Random;
 
-public class LWGenPallete {
+public class LWGenBridge {
 	private LinkedList<String[]> previousColors; //LL Storing all previous color arrays.
 	private LinkedList<Byte> previousSteps;//LL Storing all previous step amounts.
 
 	private String [] currentColors;//AL Storing current scheme.
 
-	private String currentBaseColor;//STR Storing the current HEX base.
+	private String currentBaseColor1;//STR Storing the current HEX base.
+	private String currentBaseColor2;//STR Storing the current HEX base.
 	private byte currentSteps;//BYTE Containing current step amount;
 
-	private byte changeableRGB;//BYTE Containing the color set to change r(1)g(2)b(3).
-	private float harsh;//FLOAT Containing the multiplier for how much currentBaseColor's valRGB will change.
-
-	public LWGenPallete(){reset();}
+	public LWGenBridge(){reset();}
 
 	@Override 
-	public String toString(){
+	public String toString(){ //Converted
 		if (currentColors==null)return null;
 		String cat = "";
 		for (int i = 0; i < currentSteps; i++)cat+=currentColors[i]+'\n';
@@ -24,15 +22,13 @@ public class LWGenPallete {
 		return cat;
 	}
 
-	public void reset(){
-		Random R = new Random();
+	public void reset(){ //Converted
 		previousColors = new LinkedList<String[]>();
 		previousSteps = new LinkedList<Byte>();
 		currentColors = null;
-		currentBaseColor = "ffffff";
+		currentBaseColor1 = "ffffff";
+		currentBaseColor2 = "000000";
 		currentSteps = 5;
-		changeableRGB = (byte)(R.nextInt(3)+1);
-		harsh = 1;
 	}
 
 	public String[] nextColors(){
@@ -92,54 +88,48 @@ public class LWGenPallete {
 
 		return out;
 	}
-
-	public boolean setBase(String HEX){
-		HEX = HEX.trim();
-		if (HEX.length()!=6)return false;
+	
+	public boolean setSteps(byte steps){ //Converted
+		if (steps<2)return false;
+		currentSteps = (byte) (steps+1);
+		return true;
+	}
+	
+	public boolean setBases(String[] HEX){ //Converted
+		if (HEX.length!=2)return false;
+		HEX[0] = HEX[0].trim();
+		HEX[1] = HEX[1].trim();
+		if (HEX[1].length()!=6 || HEX[2].length()!=6)return false;
+		
 		try
 		{
 			@SuppressWarnings("unused")
-			int value = Integer.parseInt(HEX, 16); 
+			int value1 = Integer.parseInt(HEX[0], 16); 
+			@SuppressWarnings("unused")
+			int value2 = Integer.parseInt(HEX[1], 16);
 		}
 		catch(NumberFormatException nfe)
 		{
 			return false;
 		}
-		currentBaseColor = HEX.toLowerCase();
-		changeableRGB = calcMost(currentBaseColor);
+		currentBaseColor1 = HEX[0].toLowerCase();
+		currentBaseColor2 = HEX[1].toLowerCase();
 		return true;
 	}
 	
-	public boolean setSteps(byte steps){
-		if (steps<2)return false;
-
-		currentSteps = steps;
-		return true;
+	public String[] getBase(){ //Converted
+		String[] out = new String[2];
+		out[0]=currentBaseColor1;
+		out[1]=currentBaseColor2;
+		return out;
 	}
-	public boolean setEditable(byte RGB){
-		if (RGB == 1 || RGB == 2 || RGB == 3){
-			changeableRGB = RGB;
-			return true;
-		}
-		return false;
-	}
-	public boolean setHarshness(float harshness){
-		while (harshness > 1)harshness = harshness/10;
-		if (harshness < .2)return false;
-		
-		harsh = harshness;
-		return true;
-	}
-
-	public String getBase(){return currentBaseColor;}
-	public byte getSteps(){return currentSteps;}
-	public byte getChangeable(){return changeableRGB;}
-	public float getHarshness(){return harsh;}
-	public String[] getColorsAt(int index){
+	
+	public byte getSteps(){return currentSteps;} //Converted
+	public String[] getColorsAt(int index){ //Converted
 		if (previousColors.size()<index || index < 0)return null;
 		return previousColors.get(index);
 	}
-	public String[] getColors(){return currentColors;}
+	public String[] getColors(){return currentColors;} //Converted
 
 	private String reorderHex(String in, int pullFront){
 		LinkedList<String> rgb = new LinkedList<String>();
