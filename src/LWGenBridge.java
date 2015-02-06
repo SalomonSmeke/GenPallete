@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-import java.util.Random;
 
 public class LWGenBridge {
 	private LinkedList<String[]> previousColors; //LL Storing all previous color arrays.
@@ -14,15 +13,15 @@ public class LWGenBridge {
 	public LWGenBridge(){reset();}
 
 	@Override 
-	public String toString(){ //Converted
+	public String toString(){
 		if (currentColors==null)return null;
 		String cat = "";
-		for (int i = 0; i < currentSteps; i++)cat+=currentColors[i]+'\n';
+		for (int i = 0; i < currentSteps+1; i++)cat+=currentColors[i]+'\n';
 		
 		return cat;
 	}
 
-	public void reset(){ //Converted
+	public void reset(){
 		previousColors = new LinkedList<String[]>();
 		previousSteps = new LinkedList<Byte>();
 		currentColors = null;
@@ -31,75 +30,42 @@ public class LWGenBridge {
 		currentSteps = 5;
 	}
 
-	public String[] nextColors(){
+	public String[] nextColors(){ 
 		if (currentColors != null)previousColors.add(currentColors);
 		
-		String tempColor = reorderHex(currentBaseColor,changeableRGB);
-		short [] intervals = calcIntervals(hexToDec(tempColor.substring(0, 2)));
-
-		currentColors = new String [currentSteps];
-
-		for(int i = 0; i < currentSteps; i++){
-			currentColors[i]= decToHex(intervals[i])+tempColor.substring(2, 6);
-			currentColors[i] = returnHex(currentColors[i],changeableRGB);
+		String[] out = new String [currentSteps+1];
+		
+		float subtract1 = (getValuePerRGB(1,currentBaseColor1)-getValuePerRGB(1,currentBaseColor2))/currentSteps;
+		float subtract2 = (getValuePerRGB(2,currentBaseColor1)-getValuePerRGB(2,currentBaseColor2))/currentSteps;
+		float subtract3 = (getValuePerRGB(3,currentBaseColor1)-getValuePerRGB(3,currentBaseColor2))/currentSteps;
+		
+		int baseR = getValuePerRGB(1,currentBaseColor1);
+		int baseG = getValuePerRGB(2,currentBaseColor1);
+		int baseB = getValuePerRGB(3,currentBaseColor1);
+		
+		for (int i = 0; i < out.length; i++) {
+			
+			out[i] = decToHex((int)(baseR-subtract1*i));
+			out[i] = out[i] + decToHex((int)(baseG-subtract2*i));
+			out[i] = out[i] + decToHex((int)(baseB-subtract3*i));
 		}
 		
+		currentColors = out;
 		previousSteps.add(currentSteps);
-		return currentColors;
-	}
-
-	public String[] nextPurification(){ 
-		if (currentColors != null)previousColors.add(currentColors);
 		
-		currentColors = new String[currentSteps];
-
-		String tempColor = reorderHex(currentBaseColor,changeableRGB);
-		short [] intervals1 = calcIntervals(hexToDec(tempColor.substring(2, 4)));
-		short [] intervals2 = calcIntervals(hexToDec(tempColor.substring(4, 6)));
-
-		for(int i = 0; i < currentSteps; i++){
-			currentColors[i] = tempColor.substring(0, 2) + decToHex(intervals1[i]) + decToHex(intervals2[i]);
-			currentColors[i] = returnHex(currentColors[i],changeableRGB);
-		}
-
-		previousSteps.add(currentSteps);
 		return currentColors;
 	}
 	
-	public String[] nextShades(){ 
-		if (currentColors != null)previousColors.add(currentColors);
-		
-		currentColors = new String[currentSteps];
-
-		short [] intervals0 = calcIntervals(hexToDec(currentBaseColor.substring(0, 2)));
-		short [] intervals1 = calcIntervals(hexToDec(currentBaseColor.substring(2, 4)));
-		short [] intervals2 = calcIntervals(hexToDec(currentBaseColor.substring(4, 6)));
-
-		for(int i = 0; i < currentSteps; i++)currentColors[i] =  decToHex(intervals0[i]) + decToHex(intervals1[i]) + decToHex(intervals2[i]);
-
-		previousSteps.add(currentSteps);
-		return currentColors;
-	}
-	
-	private short[] calcIntervals(short input){
-		short [] out = new short[currentSteps];
-
-		for (int i = 0; i < currentSteps; i++) out[i]=(short)(input-((input*harsh)/(currentSteps-1)*i));
-
-		return out;
-	}
-	
-	public boolean setSteps(byte steps){ //Converted
+	public boolean setSteps(byte steps){ 
 		if (steps<2)return false;
 		currentSteps = (byte) (steps+1);
 		return true;
 	}
-	
-	public boolean setBases(String[] HEX){ //Converted
+	public boolean setBases(String[] HEX){ 
 		if (HEX.length!=2)return false;
 		HEX[0] = HEX[0].trim();
 		HEX[1] = HEX[1].trim();
-		if (HEX[1].length()!=6 || HEX[2].length()!=6)return false;
+		if (HEX[0].length()!=6 || HEX[1].length()!=6)return false;
 		
 		try
 		{
@@ -117,43 +83,18 @@ public class LWGenBridge {
 		return true;
 	}
 	
-	public String[] getBase(){ //Converted
+	public String[] getBase(){ 
 		String[] out = new String[2];
 		out[0]=currentBaseColor1;
 		out[1]=currentBaseColor2;
 		return out;
 	}
-	
-	public byte getSteps(){return currentSteps;} //Converted
-	public String[] getColorsAt(int index){ //Converted
+	public byte getSteps(){return currentSteps;} 
+	public String[] getColorsAt(int index){ 
 		if (previousColors.size()<index || index < 0)return null;
 		return previousColors.get(index);
 	}
-	public String[] getColors(){return currentColors;} //Converted
-
-	private String reorderHex(String in, int pullFront){
-		LinkedList<String> rgb = new LinkedList<String>();
-
-		for (short i = 0; i < 3; i++){
-			if(i==pullFront-1){
-				rgb.add(0, in.substring(i*2, (i+1)*2));
-			} else {
-				rgb.add(in.substring(i*2, (i+1)*2));
-			}
-		}
-		return rgb.get(0)+rgb.get(1)+rgb.get(2);
-	}
-
-	private String returnHex(String in, int returnPos){
-		LinkedList<String> rgb = new LinkedList<String>();
-		String val = in.substring(0,2);
-
-		for (short i = 1; i < 3; i++) rgb.add(in.substring(i*2, (i+1)*2));
-
-		rgb.add(returnPos-1, val);
-		return rgb.get(0)+rgb.get(1)+rgb.get(2);
-	}
-
+	public String[] getColors(){return currentColors;} 
 	private short getValuePerRGB(int index, String inColorHex){
 		String perRGBStr = inColorHex.substring((index-1)*2, (index)*2);
 		return (short)hexToDec(perRGBStr);
@@ -163,7 +104,6 @@ public class LWGenBridge {
 		int d = Integer.valueOf(hexadecimal, 16);
 		return (short)d;
 	}
-
 	private String decToHex(int input){
 		String out = Integer.toHexString(input);
 		while (out.length()<2) out = "0"+out;

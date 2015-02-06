@@ -1,10 +1,14 @@
 public class GenPallete {
 
 	public static void main(String[] args) {
-		LWGenPallete A = new LWGenPallete();
+		LWGenBridge A = new LWGenBridge();
 
 		//A.setEditable((byte)1);
-		A.setBase("46B6B3");
+		String[] test = new String[2];
+		test[0] = "AA6c5F";
+		test[1] = "BB2034";
+		A.setBases(test);
+		A.setSteps((byte)3);
 		A.nextColors();
 
 		System.out.println(A.toString());

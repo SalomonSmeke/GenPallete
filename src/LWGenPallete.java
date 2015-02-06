@@ -109,7 +109,6 @@ public class LWGenPallete {
 		changeableRGB = calcMost(currentBaseColor);
 		return true;
 	}
-	
 	public boolean setSteps(byte steps){
 		if (steps<2)return false;
 
@@ -189,7 +188,6 @@ public class LWGenPallete {
 		int d = Integer.valueOf(hexadecimal, 16);
 		return (short)d;
 	}
-
 	private String decToHex(int input){
 		String out = Integer.toHexString(input);
 		while (out.length()<2) out = "0"+out;
