@@ -179,22 +179,6 @@ public class LWGenPallete {
 		}
 		return index;
 	}
-	
-	private byte calcLeast(String inColor) {
-		Short [] rgbSplit = new Short [3];
-
-		byte index = 0;
-		int small = Integer.MAX_VALUE;
-
-		for (short i = 0; i < rgbSplit.length; i++){
-			rgbSplit [i] = getValuePerRGB(i+1, inColor);
-			if (rgbSplit [i]<small){
-				small = rgbSplit [i];
-				index = (byte)(i+1);
-			}
-		}
-		return index;
-	}
 
 	private short getValuePerRGB(int index, String inColorHex){
 		String perRGBStr = inColorHex.substring((index-1)*2, (index)*2);

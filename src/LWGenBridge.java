@@ -7,8 +7,8 @@ public class LWGenBridge {
 
 	private String [] currentColors;//AL Storing current scheme.
 
-	private String currentBaseColor1;//STR Storing the current HEX base.
-	private String currentBaseColor2;//STR Storing the current HEX base.
+	private String currentBaseColor1;//STR Storing the current HEX1 base.
+	private String currentBaseColor2;//STR Storing the current HEX2 base.
 	private byte currentSteps;//BYTE Containing current step amount;
 
 	public LWGenBridge(){reset();}
@@ -152,38 +152,6 @@ public class LWGenBridge {
 
 		rgb.add(returnPos-1, val);
 		return rgb.get(0)+rgb.get(1)+rgb.get(2);
-	}
-
-	private byte calcMost(String inColor) {
-		Short [] rgbSplit = new Short [3];
-
-		byte index = 0;
-		int big = 0;
-
-		for (short i = 0; i < rgbSplit.length; i++){
-			rgbSplit [i] = getValuePerRGB(i+1, inColor);
-			if (rgbSplit [i]>big){
-				big = rgbSplit [i];
-				index = (byte)(i+1);
-			}
-		}
-		return index;
-	}
-	
-	private byte calcLeast(String inColor) {
-		Short [] rgbSplit = new Short [3];
-
-		byte index = 0;
-		int small = Integer.MAX_VALUE;
-
-		for (short i = 0; i < rgbSplit.length; i++){
-			rgbSplit [i] = getValuePerRGB(i+1, inColor);
-			if (rgbSplit [i]<small){
-				small = rgbSplit [i];
-				index = (byte)(i+1);
-			}
-		}
-		return index;
 	}
 
 	private short getValuePerRGB(int index, String inColorHex){
