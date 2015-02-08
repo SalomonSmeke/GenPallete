@@ -51,6 +51,23 @@ public class LWGenPallete {
 		previousSteps.add(currentSteps);
 		return currentColors;
 	}
+	
+	public String[] nextColorsR(){
+		if (currentColors != null)previousColors.add(currentColors);
+		
+		String tempColor = reorderHex(currentBaseColor,changeableRGB);
+		short [] intervals = calcIntervalsR(hexToDec(tempColor.substring(0, 2)));
+
+		currentColors = new String [currentSteps];
+
+		for(int i = 0; i < currentSteps; i++){
+			currentColors[i]= decToHex(intervals[i])+tempColor.substring(2, 6);
+			currentColors[i] = returnHex(currentColors[i],changeableRGB);
+		}
+		
+		previousSteps.add(currentSteps);
+		return currentColors;
+	}
 
 	public String[] nextPurification(){ 
 		if (currentColors != null)previousColors.add(currentColors);
@@ -93,6 +110,16 @@ public class LWGenPallete {
 		return out;
 	}
 
+	private short[] calcIntervalsR(short input) {
+		short [] out = new short[currentSteps];
+		
+		int mod = 255-input;
+
+		for (int i = 0; i < currentSteps; i++) out[i]=(short)(input+((mod*harsh)/(currentSteps-1)*i));
+
+		return out;
+	}
+	
 	public boolean setBase(String HEX){
 		HEX = HEX.trim();
 		if (HEX.length()!=6)return false;
