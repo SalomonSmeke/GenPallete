@@ -194,75 +194,61 @@
 	    return parseInt(input, 16);
 	}
 	
-	//TODO finish translation
+	LWGenPallete.prototype.nextColors = function(){
+		if (currentColors != null) previousColors[previousColors.length] = (currentColors);
+		var tempColor = reorderHex(currentBaseColor, changeableRGB);
+		var intervals = this.calcIntervals(hexToDec(tempColor.substring(0, 2)));
+		
+		currentColors = [];
+		
+		for (var i = 0; i < currentSteps; i++) {
+	        currentColors[i] = decToHex(intervals[i]) + tempColor.substring(2, 6);
+            currentColors[i] = returnHex(currentColors[i], changeableRGB);
+        }
+        previousSteps[previousSteps.length] = currentSteps;
+        return currentColors;
+	};
+	
+	LWGenPallete.prototype.nextColorsR = function(){
+		if (currentColors != null) previousColors[previousColors.length] = (currentColors);
+		var tempColor = reorderHex(currentBaseColor, changeableRGB);
+		var intervals = this.calcIntervalsR(hexToDec(tempColor.substring(0, 2)));
+		currentColors = [];
+		
+		for (var i = 0; i < currentSteps; i++) {
+	        currentColors[i] = decToHex(intervals[i]) + tempColor.substring(2, 6);
+            currentColors[i] = returnHex(currentColors[i], changeableRGB);
+        }
+        previousSteps[previousSteps.length] = currentSteps;
+        return currentColors;
+	};
 
-	public class LWGenPallete {
+	LWGenPallete.prototype.nextPurification = function(){
+		if (currentColors != null) previousColors[previousColors.length] = (currentColors);
+		currentColors = [];	
+		var tempColor = reorderHex(currentBaseColor, changeableRGB);
+		
+		var intervals1 = this.calcIntervals(hexToDec(tempColor.substring(2, 4)));
+		var intervals2 = this.calcIntervals(hexToDec(tempColor.substring(4, 6)));
 
-	    public String[] nextColors() {
-	        if (currentColors != null) previousColors.add(currentColors);
-
-	        String tempColor = reorderHex(currentBaseColor, changeableRGB);
-	        short[] intervals = calcIntervals(hexToDec(tempColor.substring(0, 2)));
-
-	        currentColors = new String[currentSteps];
-
-	        for (int i = 0; i < currentSteps; i++) {
-	            currentColors[i] = decToHex(intervals[i]) + tempColor.substring(2, 6);
-	            currentColors[i] = returnHex(currentColors[i], changeableRGB);
-	        }
-
-	        previousSteps.add(currentSteps);
-	        return currentColors;
-	    }
-
-	    public String[] nextColorsR() {
-	        if (currentColors != null) previousColors.add(currentColors);
-
-	        String tempColor = reorderHex(currentBaseColor, changeableRGB);
-	        short[] intervals = calcIntervalsR(hexToDec(tempColor.substring(0, 2)));
-
-	        currentColors = new String[currentSteps];
-
-	        for (int i = 0; i < currentSteps; i++) {
-	            currentColors[i] = decToHex(intervals[i]) + tempColor.substring(2, 6);
-	            currentColors[i] = returnHex(currentColors[i], changeableRGB);
-	        }
-
-	        previousSteps.add(currentSteps);
-	        return currentColors;
-	    }
-
-	    public String[] nextPurification() {
-	        if (currentColors != null) previousColors.add(currentColors);
-
-	        currentColors = new String[currentSteps];
-
-	        String tempColor = reorderHex(currentBaseColor, changeableRGB);
-	        short[] intervals1 = calcIntervals(hexToDec(tempColor.substring(2, 4)));
-	        short[] intervals2 = calcIntervals(hexToDec(tempColor.substring(4, 6)));
-
-	        for (int i = 0; i < currentSteps; i++) {
+		for (var i = 0; i < currentSteps; i++) {
 	            currentColors[i] = tempColor.substring(0, 2) + decToHex(intervals1[i]) + decToHex(intervals2[i]);
 	            currentColors[i] = returnHex(currentColors[i], changeableRGB);
-	        }
+        }
+        previousSteps[previousSteps.length] = currentSteps;
+        return currentColors;
+	};
 
-	        previousSteps.add(currentSteps);
-	        return currentColors;
-	    }
-
-	    public String[] nextShades() {
-	        if (currentColors != null) previousColors.add(currentColors);
-
-	        currentColors = new String[currentSteps];
-
-	        short[] intervals0 = calcIntervals(hexToDec(currentBaseColor.substring(0, 2)));
-	        short[] intervals1 = calcIntervals(hexToDec(currentBaseColor.substring(2, 4)));
-	        short[] intervals2 = calcIntervals(hexToDec(currentBaseColor.substring(4, 6)));
-
-	        for (int i = 0; i < currentSteps; i++) currentColors[i] = decToHex(intervals0[i]) + decToHex(intervals1[i]) + decToHex(intervals2[i]);
-
-	        previousSteps.add(currentSteps);
-	        return currentColors;
-	    }
-
-	}
+	LWGenPallete.prototype.nextShades = function(){
+		if (currentColors != null) previousColors[previousColors.length] = (currentColors);
+		currentColors = [];
+		
+		var intervals0 = this.calcIntervals(hexToDec(currentBaseColor.substring(0, 2)));
+        var intervals1 = this.calcIntervals(hexToDec(currentBaseColor.substring(2, 4)));
+        var intervals2 = this.calcIntervals(hexToDec(currentBaseColor.substring(4, 6)));
+        
+        for (var i = 0; i < currentSteps; i++) currentColors[i] = decToHex(intervals0[i]) + decToHex(intervals1[i]) + decToHex(intervals2[i]);
+	
+        previousSteps[previousSteps.length] = currentSteps;
+        return currentColors;
+	};
