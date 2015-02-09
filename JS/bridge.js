@@ -1,16 +1,14 @@
-var previousColors;
-var previousSteps;
+	var previousColors;
+	var previousSteps;
     
-var currentColors;//AL Storing current scheme.
+	var currentColors;//AL Storing current scheme.
 
-var currentBaseColor1;//STR Storing the current HEX1 base.
-var currentBaseColor2;//STR Storing the current HEX2 base.
-var currentSteps;//BYTE Containing current step amount;
+	var currentBaseColor1;//STR Storing the current HEX1 base.
+	var currentBaseColor2;//STR Storing the current HEX2 base.
+	var currentSteps;//BYTE Containing current step amount;
 
-function LWGenBridge(){this.reset;}
-
-LWGenBridge.prototype.reset = function(){
-    	previousColors = [];
+function LWGenBridge(){
+	    previousColors = [];
 		previousSteps = [];
 		currentColors = null;
 		currentBaseColor1 = "ffffff";
@@ -28,8 +26,9 @@ LWGenBridge.prototype.toString = function(){
 }
 
 LWGenBridge.prototype.nextColors = function(){ 
-	if (currentColors != null)previousColors.add(currentColors);
-	
+	var indx = previousColors.length;
+	if (currentColors != null)previousColors[indx] = currentColors;
+
 	var out = [];
 		
 	var subtract1 = (getValuePerRGB(1,currentBaseColor1)-getValuePerRGB(1,currentBaseColor2))/currentSteps;
@@ -40,7 +39,7 @@ LWGenBridge.prototype.nextColors = function(){
 	var baseG = getValuePerRGB(2,currentBaseColor1);
 	var baseB = getValuePerRGB(3,currentBaseColor1);
 		
-	for (var i = 0; i < currentSteps; i++) {
+	for (var i = 0; i <= currentSteps; i++) {
 		
 		out[i] = decToHex(Math.round(baseR-subtract1*i));
 		out[i] = out[i] + decToHex(Math.round(baseG-subtract2*i));
@@ -48,7 +47,7 @@ LWGenBridge.prototype.nextColors = function(){
 	}
 	
 	currentColors = out;
-	previousSteps.add(currentSteps);
+	previousSteps[indx] = currentSteps;
 	
 	return currentColors;
 }
@@ -63,7 +62,7 @@ LWGenBridge.prototype.setBases = function(HEX){
 		if (HEX.length!=2)return false;
 		HEX[0] = HEX[0].trim();
 		HEX[1] = HEX[1].trim();
-		if (HEX[0].length()!=6 || HEX[1].length()!=6)return false;
+		if (HEX[0].length!=6 || HEX[1].length!=6)return false;
 		currentBaseColor1 = HEX[0].toLowerCase();
 		currentBaseColor2 = HEX[1].toLowerCase();
 		return true;
@@ -88,12 +87,12 @@ function getValuePerRGB(index,inColorHex){
 }
 
 function decToHex(input) {
-	return input.toString(16);
-}
-function hexToDec(input) {
-	var out = parseInt(input,16);
-	while (out.length()<2) {
+	var out = input.toString(16);
+	while (out.length<2) {
 		out = "0"+out;
 	}
 	return out;
+}
+function hexToDec(input) {
+	return parseInt(input,16);
 }
